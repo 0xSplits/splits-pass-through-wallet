@@ -31,6 +31,8 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     /// events
     /// -----------------------------------------------------------------------
 
+    event SetPassThrough(address passThrough);
+
     // emitted in clone bytecode
     event ReceiveETH(uint256 amount);
 
@@ -72,7 +74,17 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     /// -----------------------------------------------------------------------
 
     /// -----------------------------------------------------------------------
-    /// functions - public & external
+    /// functions - public & external - onlyOwner
+    /// -----------------------------------------------------------------------
+
+    /// set passThrough
+    function setPassThrough(address passThrough_) external onlyOwner {
+        $passThrough = passThrough_;
+        emit SetPassThrough(passThrough_);
+    }
+
+    /// -----------------------------------------------------------------------
+    /// functions - public & external - permissionless
     /// -----------------------------------------------------------------------
 
     /// emit event when receiving ETH
