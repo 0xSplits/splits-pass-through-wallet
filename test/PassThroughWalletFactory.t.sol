@@ -58,7 +58,7 @@ contract PassThroughWalletFactoryTest is BaseTest {
     /// tests - fuzz - createPassThroughWallet
     /// -----------------------------------------------------------------------
 
-    function test_createPassThroughWallet_callsInitializer(PassThroughWalletImpl.InitParams memory params) public {
+    function testFuzz_createPassThroughWallet_callsInitializer(PassThroughWalletImpl.InitParams memory params) public {
         vm.expectCall({
             callee: address(passThroughWalletImpl),
             msgValue: 0 ether,
@@ -67,7 +67,7 @@ contract PassThroughWalletFactoryTest is BaseTest {
         passThroughWalletFactory.createPassThroughWallet(params);
     }
 
-    function test_createPassThroughWallet_emitsEvent(PassThroughWalletImpl.InitParams memory params) public {
+    function testFuzz_createPassThroughWallet_emitsEvent(PassThroughWalletImpl.InitParams memory params) public {
         // don't check first topic which is new address
         vm.expectEmit({checkTopic1: false, checkTopic2: true, checkTopic3: true, checkData: true});
         emit CreatePassThroughWallet(passThroughWalletImpl, params);
