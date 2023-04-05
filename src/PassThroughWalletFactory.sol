@@ -7,7 +7,7 @@ import {PassThroughWalletImpl} from "src/PassThroughWalletImpl.sol";
 
 /// @title Pass-Through Wallet Factory
 /// @author 0xSplits
-/// @notice Factory for creating pass-through wallets
+/// @notice Factory for creating pass-through wallets.
 /// @dev This contract uses token = address(0) to refer to ETH.
 contract PassThroughWalletFactory {
     /// -----------------------------------------------------------------------
@@ -25,10 +25,6 @@ contract PassThroughWalletFactory {
     );
 
     /// -----------------------------------------------------------------------
-    /// storage
-    /// -----------------------------------------------------------------------
-
-    /// -----------------------------------------------------------------------
     /// storage - constants & immutables
     /// -----------------------------------------------------------------------
 
@@ -41,10 +37,6 @@ contract PassThroughWalletFactory {
     constructor() {
         passThroughWalletImpl = new PassThroughWalletImpl();
     }
-
-    /// -----------------------------------------------------------------------
-    /// functions
-    /// -----------------------------------------------------------------------
 
     /// -----------------------------------------------------------------------
     /// functions - public & external

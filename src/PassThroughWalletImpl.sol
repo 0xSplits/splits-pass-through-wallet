@@ -50,7 +50,21 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     /// storage - mutables
     /// -----------------------------------------------------------------------
 
+    /// slot 0 - 11 bytes free
+
+    /// OwnableImpl storage
+    /// address public $owner;
+    /// 20 bytes
+
+    /// PausableImpl storage
+    /// bool public $paused;
+    /// 1 byte
+
+    /// slot 1 - 12 bytes free
+
+    /// address to pass-through funds to
     address public $passThrough;
+    /// 20 bytes
 
     /// -----------------------------------------------------------------------
     /// constructor & initializer
@@ -93,7 +107,7 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     /*     emit ReceiveETH(msg.value); */
     /* } */
 
-    /// pass tokens_ through to $passThrough
+    /// send tokens_ to $passThrough
     function passThroughTokens(address[] calldata tokens_) external pausable {
         address passThrough = $passThrough;
         uint256 length = tokens_.length;
