@@ -1,3 +1,4 @@
 ds-test/=lib/forge-std/lib/ds-test/src/
 forge-std/=lib/forge-std/src/
 splits-utils/=lib/splits-utils/src/
+splits-tests/=lib/splits-utils/test/
