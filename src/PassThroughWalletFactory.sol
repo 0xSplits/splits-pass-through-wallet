@@ -10,37 +10,17 @@ import {PassThroughWalletImpl} from "src/PassThroughWalletImpl.sol";
 /// @notice Factory for creating pass-through wallets.
 /// @dev This contract uses token = address(0) to refer to ETH.
 contract PassThroughWalletFactory {
-    /// -----------------------------------------------------------------------
-    /// libraries
-    /// -----------------------------------------------------------------------
-
     using LibClone for address;
-
-    /// -----------------------------------------------------------------------
-    /// events
-    /// -----------------------------------------------------------------------
 
     event CreatePassThroughWallet(
         PassThroughWalletImpl indexed passThroughWallet, PassThroughWalletImpl.InitParams params
     );
 
-    /// -----------------------------------------------------------------------
-    /// storage - constants & immutables
-    /// -----------------------------------------------------------------------
-
     PassThroughWalletImpl public immutable passThroughWalletImpl;
-
-    /// -----------------------------------------------------------------------
-    /// constructor
-    /// -----------------------------------------------------------------------
 
     constructor() {
         passThroughWalletImpl = new PassThroughWalletImpl();
     }
-
-    /// -----------------------------------------------------------------------
-    /// functions - public & external
-    /// -----------------------------------------------------------------------
 
     function createPassThroughWallet(PassThroughWalletImpl.InitParams calldata params_)
         external
