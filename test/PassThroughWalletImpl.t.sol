@@ -14,13 +14,15 @@ contract PassThroughWalletImplTest is BaseTest {
     event OwnershipTransferred(address indexed oldOwner, address indexed newOwner);
     event SetPassThrough(address passThrough);
 
-    PassThroughWalletFactory public passThroughWalletFactory;
-    PassThroughWalletImpl public passThroughWalletImpl;
-    PassThroughWalletImpl public passThroughWallet;
+    uint256 constant NUM_TOKENS = 2;
 
-    PassThroughWalletImpl.InitParams public initParams;
+    PassThroughWalletFactory passThroughWalletFactory;
+    PassThroughWalletImpl passThroughWalletImpl;
+    PassThroughWalletImpl passThroughWallet;
 
-    address[] public tokens;
+    PassThroughWalletImpl.InitParams initParams;
+
+    address[] tokens;
 
     function setUp() public virtual override {
         super.setUp();
@@ -30,9 +32,9 @@ contract PassThroughWalletImplTest is BaseTest {
 
         initParams = PassThroughWalletImpl.InitParams({owner: users.alice, paused: false, passThrough: users.bob});
         passThroughWallet = passThroughWalletFactory.createPassThroughWallet(initParams);
-        deal({account: address(passThroughWallet)});
+        _deal({account: address(passThroughWallet)});
 
-        tokens = new address[](2);
+        tokens = new address[](NUM_TOKENS);
         tokens[0] = ETH_ADDRESS;
         tokens[1] = address(mockERC20);
     }
@@ -89,7 +91,7 @@ contract PassThroughWalletImplTest is BaseTest {
 
     function test_initializer_emitsOwnershipTransferred() public callerFactory {
         vm.prank(address(passThroughWalletFactory));
-        vm.expectEmit();
+        _expectEmit();
         emit OwnershipTransferred(address(0), initParams.owner);
         passThroughWallet.initializer(initParams);
     }
@@ -215,17 +217,17 @@ contract PassThroughWalletImplTest is BaseTest {
     /// tests - fuzz - passThroughTokens
     /// -----------------------------------------------------------------------
 
-    function testFuzz_passThroughTokens_sendsTokensToPassThrough(uint96[2][2] calldata amounts_) public unpaused {
-        vm.deal({account: address(passThroughWallet), newBalance: amounts_[0][0] });
-        deal({token: address(mockERC20), to: address(passThroughWallet), give: amounts_[1][0]});
-
-        vm.deal({account: users.bob, newBalance: amounts_[0][1] });
-        deal({token: address(mockERC20), to: users.bob, give: amounts_[1][1]});
-
-        uint256 length = tokens.length;
+    function testFuzz_passThroughTokens_sendsTokensToPassThrough(uint96[NUM_TOKENS] calldata amounts_) public unpaused {
+        uint256 length = NUM_TOKENS;
         uint256[] memory preBalancesWallet = new uint256[](length);
         uint256[] memory preBalancesBob = new uint256[](length);
-        for (uint256 i; i < length; ++i) {
+        for (uint256 i; i < length; i++) {
+            address token = tokens[i];
+            if (token._isETH()) {
+                vm.deal({account: address(passThroughWallet), newBalance: amounts_[0] });
+            } else {
+                deal({token: token, to: address(passThroughWallet), give: amounts_[1]});
+            }
             preBalancesWallet[i] = tokens[i]._balanceOf(address(passThroughWallet));
             preBalancesBob[i] = tokens[i]._balanceOf(users.bob);
         }

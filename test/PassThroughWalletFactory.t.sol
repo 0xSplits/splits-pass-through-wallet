@@ -10,14 +10,18 @@ contract PassThroughWalletFactoryTest is BaseTest {
         PassThroughWalletImpl indexed passThroughWallet, PassThroughWalletImpl.InitParams params
     );
 
-    PassThroughWalletFactory public passThroughWalletFactory;
-    PassThroughWalletImpl public passThroughWalletImpl;
+    PassThroughWalletFactory passThroughWalletFactory;
+    PassThroughWalletImpl passThroughWalletImpl;
+
+    PassThroughWalletImpl.InitParams params;
 
     function setUp() public virtual override {
         super.setUp();
 
         passThroughWalletFactory = new PassThroughWalletFactory();
         passThroughWalletImpl = passThroughWalletFactory.passThroughWalletImpl();
+
+        params = PassThroughWalletImpl.InitParams({owner: users.alice, paused: false, passThrough: users.bob});
     }
 
     /// -----------------------------------------------------------------------
@@ -29,9 +33,6 @@ contract PassThroughWalletFactoryTest is BaseTest {
     /// -----------------------------------------------------------------------
 
     function test_createPassThroughWallet_callsInitializer() public {
-        PassThroughWalletImpl.InitParams memory params =
-            PassThroughWalletImpl.InitParams({owner: users.alice, paused: false, passThrough: users.bob});
-
         vm.expectCall({
             callee: address(passThroughWalletImpl),
             msgValue: 0 ether,
@@ -41,12 +42,9 @@ contract PassThroughWalletFactoryTest is BaseTest {
     }
 
     function test_createPassThroughWallet_emitsCreatePassThroughWallet() public {
-        PassThroughWalletImpl.InitParams memory params =
-            PassThroughWalletImpl.InitParams({owner: users.alice, paused: false, passThrough: users.bob});
-
         // don't check first topic which is new address
         vm.expectEmit({checkTopic1: false, checkTopic2: true, checkTopic3: true, checkData: true});
-        emit CreatePassThroughWallet(passThroughWalletImpl, params);
+        emit CreatePassThroughWallet(PassThroughWalletImpl(ZERO_ADDRESS), params);
         passThroughWalletFactory.createPassThroughWallet(params);
     }
 
@@ -58,21 +56,21 @@ contract PassThroughWalletFactoryTest is BaseTest {
     /// tests - fuzz - createPassThroughWallet
     /// -----------------------------------------------------------------------
 
-    function testFuzz_createPassThroughWallet_callsInitializer(PassThroughWalletImpl.InitParams memory params) public {
+    function testFuzz_createPassThroughWallet_callsInitializer(PassThroughWalletImpl.InitParams calldata params_) public {
         vm.expectCall({
             callee: address(passThroughWalletImpl),
             msgValue: 0 ether,
-            data: abi.encodeCall(PassThroughWalletImpl.initializer, (params))
+            data: abi.encodeCall(PassThroughWalletImpl.initializer, (params_))
         });
-        passThroughWalletFactory.createPassThroughWallet(params);
+        passThroughWalletFactory.createPassThroughWallet(params_);
     }
 
     function testFuzz_createPassThroughWallet_emitsCreatePassThroughWallet(
-        PassThroughWalletImpl.InitParams memory params
+        PassThroughWalletImpl.InitParams calldata params_
     ) public {
         // don't check first topic which is new address
         vm.expectEmit({checkTopic1: false, checkTopic2: true, checkTopic3: true, checkData: true});
-        emit CreatePassThroughWallet(passThroughWalletImpl, params);
-        passThroughWalletFactory.createPassThroughWallet(params);
+        emit CreatePassThroughWallet(passThroughWalletImpl, params_);
+        passThroughWalletFactory.createPassThroughWallet(params_);
     }
 }
