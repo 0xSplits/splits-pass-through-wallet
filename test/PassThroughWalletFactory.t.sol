@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "splits-tests/base.t.sol";
 
-import {PassThroughWalletImpl, PassThroughWalletFactory} from "src/PassThroughWalletFactory.sol";
+import {PassThroughWalletImpl, PassThroughWalletFactory} from "../src/PassThroughWalletFactory.sol";
 
 contract PassThroughWalletFactoryTest is BaseTest {
     event CreatePassThroughWallet(
@@ -56,7 +56,9 @@ contract PassThroughWalletFactoryTest is BaseTest {
     /// tests - fuzz - createPassThroughWallet
     /// -----------------------------------------------------------------------
 
-    function testFuzz_createPassThroughWallet_callsInitializer(PassThroughWalletImpl.InitParams calldata params_) public {
+    function testFuzz_createPassThroughWallet_callsInitializer(PassThroughWalletImpl.InitParams calldata params_)
+        public
+    {
         vm.expectCall({
             callee: address(passThroughWalletImpl),
             msgValue: 0 ether,

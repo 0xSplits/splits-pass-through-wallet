@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "splits-tests/base.t.sol";
 
-import {PassThroughWalletImpl, PassThroughWalletFactory} from "src/PassThroughWalletFactory.sol";
+import {PassThroughWalletImpl, PassThroughWalletFactory} from "../src/PassThroughWalletFactory.sol";
 
 contract PassThroughWalletImplTest is BaseTest {
     using TokenUtils for address;
@@ -170,19 +170,28 @@ contract PassThroughWalletImplTest is BaseTest {
         assertEq(passThroughWallet.$owner(), params_.owner);
     }
 
-    function testFuzz_initializer_setsPausable(PassThroughWalletImpl.InitParams calldata params_) public callerFactory {
+    function testFuzz_initializer_setsPausable(PassThroughWalletImpl.InitParams calldata params_)
+        public
+        callerFactory
+    {
         vm.prank(address(passThroughWalletFactory));
         passThroughWallet.initializer(params_);
         assertEq(passThroughWallet.$paused(), params_.paused);
     }
 
-    function testFuzz_initializer_setsPassThrough(PassThroughWalletImpl.InitParams calldata params_) public callerFactory {
+    function testFuzz_initializer_setsPassThrough(PassThroughWalletImpl.InitParams calldata params_)
+        public
+        callerFactory
+    {
         vm.prank(address(passThroughWalletFactory));
         passThroughWallet.initializer(params_);
         assertEq(passThroughWallet.$passThrough(), params_.passThrough);
     }
 
-    function testFuzz_initializer_emitsOwnershipTransferred(PassThroughWalletImpl.InitParams calldata params_) public callerFactory {
+    function testFuzz_initializer_emitsOwnershipTransferred(PassThroughWalletImpl.InitParams calldata params_)
+        public
+        callerFactory
+    {
         vm.prank(address(passThroughWalletFactory));
         vm.expectEmit();
         emit OwnershipTransferred(address(0), params_.owner);
@@ -217,14 +226,17 @@ contract PassThroughWalletImplTest is BaseTest {
     /// tests - fuzz - passThroughTokens
     /// -----------------------------------------------------------------------
 
-    function testFuzz_passThroughTokens_sendsTokensToPassThrough(uint96[NUM_TOKENS] calldata amounts_) public unpaused {
+    function testFuzz_passThroughTokens_sendsTokensToPassThrough(uint96[NUM_TOKENS] calldata amounts_)
+        public
+        unpaused
+    {
         uint256 length = NUM_TOKENS;
         uint256[] memory preBalancesWallet = new uint256[](length);
         uint256[] memory preBalancesBob = new uint256[](length);
         for (uint256 i; i < length; i++) {
             address token = tokens[i];
             if (token._isETH()) {
-                vm.deal({account: address(passThroughWallet), newBalance: amounts_[0] });
+                vm.deal({account: address(passThroughWallet), newBalance: amounts_[0]});
             } else {
                 deal({token: token, to: address(passThroughWallet), give: amounts_[1]});
             }

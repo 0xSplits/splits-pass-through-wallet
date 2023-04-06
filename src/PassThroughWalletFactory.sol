@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import {LibClone} from "splits-utils/LibClone.sol";
 
-import {PassThroughWalletImpl} from "src/PassThroughWalletImpl.sol";
+import {PassThroughWalletImpl} from "./PassThroughWalletImpl.sol";
 
 /// @title Pass-Through Wallet Factory
 /// @author 0xSplits
