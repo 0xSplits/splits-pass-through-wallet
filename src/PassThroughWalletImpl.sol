@@ -53,17 +53,17 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     /// slot 0 - 11 bytes free
 
     /// OwnableImpl storage
-    /// address public $owner;
+    /// address internal $owner;
     /// 20 bytes
 
     /// PausableImpl storage
-    /// bool public $paused;
+    /// bool internal $paused;
     /// 1 byte
 
     /// slot 1 - 12 bytes free
 
     /// address to pass-through funds to
-    address public $passThrough;
+    address internal $passThrough;
     /// 20 bytes
 
     /// -----------------------------------------------------------------------
@@ -109,15 +109,23 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
 
     /// send tokens_ to $passThrough
     function passThroughTokens(address[] calldata tokens_) external pausable {
-        address passThrough = $passThrough;
+        address _passThrough = $passThrough;
         uint256 length = tokens_.length;
         for (uint256 i; i < length;) {
             address token = tokens_[i];
-            token._safeTransfer(passThrough, token._balanceOf(address(this)));
+            token._safeTransfer(_passThrough, token._balanceOf(address(this)));
 
             unchecked {
                 ++i;
             }
         }
+    }
+
+    /// -----------------------------------------------------------------------
+    /// functions - public & external - view
+    /// -----------------------------------------------------------------------
+
+    function passThrough() external view returns (address) {
+        return $passThrough;
     }
 }

@@ -74,19 +74,19 @@ contract PassThroughWalletImplTest is BaseTest {
     function test_initializer_setsOwner() public callerFactory {
         vm.prank(address(passThroughWalletFactory));
         passThroughWallet.initializer(initParams);
-        assertEq(passThroughWallet.$owner(), initParams.owner);
+        assertEq(passThroughWallet.owner(), initParams.owner);
     }
 
     function test_initializer_setsPausable() public callerFactory {
         vm.prank(address(passThroughWalletFactory));
         passThroughWallet.initializer(initParams);
-        assertEq(passThroughWallet.$paused(), initParams.paused);
+        assertEq(passThroughWallet.paused(), initParams.paused);
     }
 
     function test_initializer_setsPassThrough() public callerFactory {
         vm.prank(address(passThroughWalletFactory));
         passThroughWallet.initializer(initParams);
-        assertEq(passThroughWallet.$passThrough(), initParams.passThrough);
+        assertEq(passThroughWallet.passThrough(), initParams.passThrough);
     }
 
     function test_initializer_emitsOwnershipTransferred() public callerFactory {
@@ -108,7 +108,7 @@ contract PassThroughWalletImplTest is BaseTest {
     function test_setPassThrough_setsPassThrough() public callerOwner {
         vm.prank(initParams.owner);
         passThroughWallet.setPassThrough(users.eve);
-        assertEq(passThroughWallet.$passThrough(), users.eve);
+        assertEq(passThroughWallet.passThrough(), users.eve);
     }
 
     function test_setPassThrough_emitsSetPassThrough() public callerOwner {
@@ -167,7 +167,7 @@ contract PassThroughWalletImplTest is BaseTest {
     function testFuzz_initializer_setsOwner(PassThroughWalletImpl.InitParams calldata params_) public callerFactory {
         vm.prank(address(passThroughWalletFactory));
         passThroughWallet.initializer(params_);
-        assertEq(passThroughWallet.$owner(), params_.owner);
+        assertEq(passThroughWallet.owner(), params_.owner);
     }
 
     function testFuzz_initializer_setsPausable(PassThroughWalletImpl.InitParams calldata params_)
@@ -176,7 +176,7 @@ contract PassThroughWalletImplTest is BaseTest {
     {
         vm.prank(address(passThroughWalletFactory));
         passThroughWallet.initializer(params_);
-        assertEq(passThroughWallet.$paused(), params_.paused);
+        assertEq(passThroughWallet.paused(), params_.paused);
     }
 
     function testFuzz_initializer_setsPassThrough(PassThroughWalletImpl.InitParams calldata params_)
@@ -185,7 +185,7 @@ contract PassThroughWalletImplTest is BaseTest {
     {
         vm.prank(address(passThroughWalletFactory));
         passThroughWallet.initializer(params_);
-        assertEq(passThroughWallet.$passThrough(), params_.passThrough);
+        assertEq(passThroughWallet.passThrough(), params_.passThrough);
     }
 
     function testFuzz_initializer_emitsOwnershipTransferred(PassThroughWalletImpl.InitParams calldata params_)
@@ -212,7 +212,7 @@ contract PassThroughWalletImplTest is BaseTest {
     function testFuzz_setPassThrough_setsPassThrough(address passThrough_) public callerOwner {
         vm.prank(initParams.owner);
         passThroughWallet.setPassThrough(passThrough_);
-        assertEq(passThroughWallet.$passThrough(), passThrough_);
+        assertEq(passThroughWallet.passThrough(), passThrough_);
     }
 
     function testFuzz_setPassThrough_emitsSetPassThrough(address passThrough_) public callerOwner {

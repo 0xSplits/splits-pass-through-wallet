@@ -44,7 +44,7 @@ contract PassThroughWalletFactoryTest is BaseTest {
     function test_createPassThroughWallet_emitsCreatePassThroughWallet() public {
         // don't check first topic which is new address
         vm.expectEmit({checkTopic1: false, checkTopic2: true, checkTopic3: true, checkData: true});
-        emit CreatePassThroughWallet(PassThroughWalletImpl(ZERO_ADDRESS), params);
+        emit CreatePassThroughWallet(PassThroughWalletImpl(ADDRESS_ZERO), params);
         passThroughWalletFactory.createPassThroughWallet(params);
     }
 
