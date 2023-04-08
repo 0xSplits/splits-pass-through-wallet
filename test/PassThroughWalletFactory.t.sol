@@ -42,9 +42,9 @@ contract PassThroughWalletFactoryTest is BaseTest {
     }
 
     function test_createPassThroughWallet_emitsCreatePassThroughWallet() public {
-        // don't check first topic which is new address
-        vm.expectEmit({checkTopic1: false, checkTopic2: true, checkTopic3: true, checkData: true});
-        emit CreatePassThroughWallet(PassThroughWalletImpl(ADDRESS_ZERO), params);
+        address expectedAddress = _predictNextAddressFrom(address(passThroughWalletFactory));
+        _expectEmit();
+        emit CreatePassThroughWallet(PassThroughWalletImpl(expectedAddress), params);
         passThroughWalletFactory.createPassThroughWallet(params);
     }
 
@@ -70,9 +70,9 @@ contract PassThroughWalletFactoryTest is BaseTest {
     function testFuzz_createPassThroughWallet_emitsCreatePassThroughWallet(
         PassThroughWalletImpl.InitParams calldata params_
     ) public {
-        // don't check first topic which is new address
-        vm.expectEmit({checkTopic1: false, checkTopic2: true, checkTopic3: true, checkData: true});
-        emit CreatePassThroughWallet(passThroughWalletImpl, params_);
+        address expectedAddress = _predictNextAddressFrom(address(passThroughWalletFactory));
+        _expectEmit();
+        emit CreatePassThroughWallet(PassThroughWalletImpl(expectedAddress), params_);
         passThroughWalletFactory.createPassThroughWallet(params_);
     }
 }
