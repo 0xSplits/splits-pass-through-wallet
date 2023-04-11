@@ -146,10 +146,7 @@ contract PassThroughWalletImplTest is BaseTest {
         }
     }
 
-    function test_passThroughTokens_returnsAmounts()
-        public
-        unpaused
-    {
+    function test_passThroughTokens_returnsAmounts() public unpaused {
         uint256 length = tokens.length;
         uint256[] memory preBalancesWallet = new uint256[](length);
         for (uint256 i; i < length; ++i) {
@@ -279,10 +276,7 @@ contract PassThroughWalletImplTest is BaseTest {
         }
     }
 
-    function testFuzz_passThroughTokens_returnsAmounts(uint96[NUM_TOKENS] calldata amounts_)
-        public
-        unpaused
-    {
+    function testFuzz_passThroughTokens_returnsAmounts(uint96[NUM_TOKENS] calldata amounts_) public unpaused {
         uint256 length = NUM_TOKENS;
         for (uint256 i; i < length; i++) {
             address token = tokens[i];
