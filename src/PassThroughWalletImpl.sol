@@ -99,6 +99,14 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     }
 
     /// -----------------------------------------------------------------------
+    /// functions - public & external - view
+    /// -----------------------------------------------------------------------
+
+    function passThrough() external view returns (address) {
+        return $passThrough;
+    }
+
+    /// -----------------------------------------------------------------------
     /// functions - public & external - permissionless
     /// -----------------------------------------------------------------------
 
@@ -125,13 +133,5 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
         }
 
         emit PassThrough(tokens_, amounts);
-    }
-
-    /// -----------------------------------------------------------------------
-    /// functions - public & external - view
-    /// -----------------------------------------------------------------------
-
-    function passThrough() external view returns (address) {
-        return $passThrough;
     }
 }
