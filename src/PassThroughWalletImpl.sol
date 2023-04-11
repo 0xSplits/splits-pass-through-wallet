@@ -32,6 +32,7 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     /// -----------------------------------------------------------------------
 
     event SetPassThrough(address passThrough);
+    event PassThrough(address[] tokens, uint256[] amounts);
 
     // emitted in clone bytecode
     event ReceiveETH(uint256 amount);
@@ -108,17 +109,22 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     /* } */
 
     /// send tokens_ to $passThrough
-    function passThroughTokens(address[] calldata tokens_) external pausable {
+    function passThroughTokens(address[] calldata tokens_) external pausable returns (uint256[] memory amounts) {
         address _passThrough = $passThrough;
         uint256 length = tokens_.length;
+        amounts = new uint256[](length);
         for (uint256 i; i < length;) {
             address token = tokens_[i];
-            token._safeTransfer(_passThrough, token._balanceOf(address(this)));
+            uint256 amount = token._balanceOf(address(this));
+            amounts[i] = amount;
+            token._safeTransfer(_passThrough, amount);
 
             unchecked {
                 ++i;
             }
         }
+
+        emit PassThrough(tokens_, amounts);
     }
 
     /// -----------------------------------------------------------------------

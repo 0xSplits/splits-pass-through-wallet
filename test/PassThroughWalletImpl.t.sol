@@ -13,6 +13,7 @@ contract PassThroughWalletImplTest is BaseTest {
 
     event OwnershipTransferred(address indexed oldOwner, address indexed newOwner);
     event SetPassThrough(address passThrough);
+    event PassThrough(address[] tokens, uint256[] amounts);
 
     uint256 constant NUM_TOKENS = 2;
 
@@ -145,6 +146,34 @@ contract PassThroughWalletImplTest is BaseTest {
         }
     }
 
+    function test_passThroughTokens_returnsAmounts()
+        public
+        unpaused
+    {
+        uint256 length = tokens.length;
+        uint256[] memory preBalancesWallet = new uint256[](length);
+        for (uint256 i; i < length; ++i) {
+            preBalancesWallet[i] = tokens[i]._balanceOf(address(passThroughWallet));
+        }
+
+        uint256[] memory amounts = passThroughWallet.passThroughTokens(tokens);
+        for (uint256 i; i < length; ++i) {
+            assertEq(amounts[i], preBalancesWallet[i]);
+        }
+    }
+
+    function test_passThroughTokens_emitsPassThrough() public unpaused {
+        uint256 length = tokens.length;
+        uint256[] memory preBalancesWallet = new uint256[](length);
+        for (uint256 i; i < length; ++i) {
+            preBalancesWallet[i] = tokens[i]._balanceOf(address(passThroughWallet));
+        }
+
+        _expectEmit();
+        emit PassThrough(tokens, preBalancesWallet);
+        passThroughWallet.passThroughTokens(tokens);
+    }
+
     /// -----------------------------------------------------------------------
     /// tests - fuzz
     /// -----------------------------------------------------------------------
@@ -248,5 +277,43 @@ contract PassThroughWalletImplTest is BaseTest {
         for (uint256 i; i < length; ++i) {
             assertEq(tokens[i]._balanceOf(users.bob), preBalancesBob[i] + preBalancesWallet[i]);
         }
+    }
+
+    function testFuzz_passThroughTokens_returnsAmounts(uint96[NUM_TOKENS] calldata amounts_)
+        public
+        unpaused
+    {
+        uint256 length = NUM_TOKENS;
+        for (uint256 i; i < length; i++) {
+            address token = tokens[i];
+            if (token._isETH()) {
+                vm.deal({account: address(passThroughWallet), newBalance: amounts_[0]});
+            } else {
+                deal({token: token, to: address(passThroughWallet), give: amounts_[1]});
+            }
+        }
+
+        uint256[] memory amounts = passThroughWallet.passThroughTokens(tokens);
+        for (uint256 i; i < length; ++i) {
+            assertEq(amounts[i], amounts_[i]);
+        }
+    }
+
+    function testFuzz_passThroughTokens_emitsPassThrough(uint96[NUM_TOKENS] calldata amounts_) public unpaused {
+        uint256 length = NUM_TOKENS;
+        uint256[] memory amounts = new uint256[](length);
+        for (uint256 i; i < length; i++) {
+            amounts[i] = uint256(amounts_[i]);
+            address token = tokens[i];
+            if (token._isETH()) {
+                vm.deal({account: address(passThroughWallet), newBalance: amounts_[0]});
+            } else {
+                deal({token: token, to: address(passThroughWallet), give: amounts_[1]});
+            }
+        }
+
+        _expectEmit();
+        emit PassThrough(tokens, amounts);
+        passThroughWallet.passThroughTokens(tokens);
     }
 }
