@@ -2,7 +2,6 @@
 pragma solidity ^0.8.17;
 
 import "splits-tests/base.t.sol";
-
 import {LibCloneBase} from "splits-tests/LibClone.t.sol";
 
 import {PassThroughWalletFactory} from "../src/PassThroughWalletFactory.sol";
@@ -90,6 +89,15 @@ contract PassThroughWalletFactoryTest is BaseTest, LibCloneBase {
         amount = amount_;
 
         test_clone_canReceiveETH();
+    }
+
+    function testFuzz_createPassThroughWallet_createsClone_emitsReceiveETH(PassThroughWalletImpl.InitParams calldata params_, uint96 amount_)
+        public
+    {
+        clone = address(passThroughWalletFactory.createPassThroughWallet(params_));
+        amount = amount_;
+
+        test_clone_emitsReceiveETH();
     }
 
     function testFuzz_createPassThroughWallet_createsClone_canDelegateCall(PassThroughWalletImpl.InitParams calldata params_, bytes calldata data_)
