@@ -54,7 +54,7 @@ contract PassThroughWalletFactoryTest is BaseTest, LibCloneBase {
             callee: address(passThroughWalletImpl),
             msgValue: 0 ether,
             data: abi.encodeCall(PassThroughWalletImpl.initializer, (params_))
-            });
+        });
         passThroughWalletFactory.createPassThroughWallet(params_);
     }
 
@@ -82,27 +82,30 @@ contract PassThroughWalletFactoryTest is BaseTest, LibCloneBase {
         test_clone_code();
     }
 
-    function testFuzz_createPassThroughWallet_createsClone_canReceiveETH(PassThroughWalletImpl.InitParams calldata params_, uint96 amount_)
-        public
-    {
+    function testFuzz_createPassThroughWallet_createsClone_canReceiveETH(
+        PassThroughWalletImpl.InitParams calldata params_,
+        uint96 amount_
+    ) public {
         clone = address(passThroughWalletFactory.createPassThroughWallet(params_));
         amount = amount_;
 
         test_clone_canReceiveETH();
     }
 
-    function testFuzz_createPassThroughWallet_createsClone_emitsReceiveETH(PassThroughWalletImpl.InitParams calldata params_, uint96 amount_)
-        public
-    {
+    function testFuzz_createPassThroughWallet_createsClone_emitsReceiveETH(
+        PassThroughWalletImpl.InitParams calldata params_,
+        uint96 amount_
+    ) public {
         clone = address(passThroughWalletFactory.createPassThroughWallet(params_));
         amount = amount_;
 
         test_clone_emitsReceiveETH();
     }
 
-    function testFuzz_createPassThroughWallet_createsClone_canDelegateCall(PassThroughWalletImpl.InitParams calldata params_, bytes calldata data_)
-        public
-    {
+    function testFuzz_createPassThroughWallet_createsClone_canDelegateCall(
+        PassThroughWalletImpl.InitParams calldata params_,
+        bytes calldata data_
+    ) public {
         vm.assume(data_.length > 0);
 
         clone = address(passThroughWalletFactory.createPassThroughWallet(params_));
@@ -110,5 +113,4 @@ contract PassThroughWalletFactoryTest is BaseTest, LibCloneBase {
 
         test_clone_canDelegateCall();
     }
-
 }
