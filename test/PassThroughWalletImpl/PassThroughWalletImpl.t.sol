@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.17;
 
-import "splits-tests/base.t.sol";
+import "splits-tests/Base.t.sol";
 
 import {
     Initialized_PausableImplBase,
@@ -9,20 +9,24 @@ import {
     Uninitialized_PausableImplBase,
     Uninitialized_PausableImplTest
 } from "splits-tests/PausableImpl/PausableImpl.t.sol";
+import {
+    Initialized_WalletImplBase,
+    Initialized_WalletImplTest,
+    Uninitialized_WalletImplBase,
+    Uninitialized_WalletImplTest
+} from "splits-tests/WalletImpl/WalletImpl.t.sol";
 
 import {
     Initialized_PassThroughWalletImplBase,
     Paused_Initialized_PassThroughWalletImplBase,
     Uninitialized_PassThroughWalletImplBase,
     Unpaused_Initialized_PassThroughWalletImplBase
-} from "./PassThroughWalletImplStateTree.sol";
+} from "./PassThroughWalletImplBase.t.sol";
 
-/* import {PassThroughWalletFactory} from "../../src/PassThroughWalletFactory.sol"; */
 import {PassThroughWalletImpl} from "../../src/PassThroughWalletImpl.sol";
 
 // TODO
-// refactor wallet
-// layer in wallet
+// review tests
 // ? more fuzzing ?
 // ? forks ?
 //   not sure how to bring forks & fuzzes together .. careful w rpc requests
@@ -35,16 +39,21 @@ import {PassThroughWalletImpl} from "../../src/PassThroughWalletImpl.sol";
 
 contract Uninitialized_PassThroughWalletImplTest is
     Uninitialized_PausableImplTest,
+    Uninitialized_WalletImplTest,
     Uninitialized_PassThroughWalletImplBase
 {
-    function setUp() public virtual override(Uninitialized_PausableImplTest, Uninitialized_PassThroughWalletImplBase) {
+    function setUp()
+        public
+        virtual
+        override(Uninitialized_PausableImplTest, Uninitialized_WalletImplTest, Uninitialized_PassThroughWalletImplBase)
+    {
         Uninitialized_PassThroughWalletImplBase.setUp();
     }
 
     function _initialize()
         internal
         virtual
-        override(Uninitialized_PausableImplTest, Uninitialized_PassThroughWalletImplBase)
+        override(Uninitialized_PausableImplTest, Uninitialized_WalletImplTest, Uninitialized_PassThroughWalletImplBase)
     {
         Uninitialized_PassThroughWalletImplBase._initialize();
     }
@@ -55,17 +64,17 @@ contract Uninitialized_PassThroughWalletImplTest is
 
     function test_revertWhen_callerNotFactory_initializer() public callerNotFactory($notFactory) {
         vm.expectRevert(Unauthorized.selector);
-        $passThroughWalletImpl.initializer(_initParams());
+        $passThroughWallet.initializer(_initParams());
     }
 
     function testFuzz_revertWhen_callerNotFactory_initializer(
         address caller_,
         PassThroughWalletImpl.InitParams calldata params_
     ) public callerNotFactory(caller_) {
-        _setUp(params_);
+        _setUpPassThroughWalletParams(params_);
 
         vm.expectRevert(Unauthorized.selector);
-        $passThroughWalletImpl.initializer(_initParams());
+        $passThroughWallet.initializer(_initParams());
     }
 
     function test_initializer_setsPassThrough() public {
@@ -74,7 +83,7 @@ contract Uninitialized_PassThroughWalletImplTest is
     }
 
     function testFuzz_initializer_setsPassThrough(PassThroughWalletImpl.InitParams calldata params_) public {
-        _setUp(params_);
+        _setUpPassThroughWalletParams(params_);
         _initialize();
 
         assertEq($passThroughWallet.passThrough(), $passThrough);
@@ -85,16 +94,21 @@ contract Uninitialized_PassThroughWalletImplTest is
 
 contract Initialized_PassThroughWalletImplTest is
     Initialized_PausableImplTest,
+    Initialized_WalletImplTest,
     Initialized_PassThroughWalletImplBase
 {
-    function setUp() public virtual override(Initialized_PausableImplTest, Initialized_PassThroughWalletImplBase) {
+    function setUp()
+        public
+        virtual
+        override(Initialized_PausableImplTest, Initialized_WalletImplTest, Initialized_PassThroughWalletImplBase)
+    {
         Initialized_PassThroughWalletImplBase.setUp();
     }
 
     function _initialize()
         internal
         virtual
-        override(Initialized_PausableImplTest, Initialized_PassThroughWalletImplBase)
+        override(Initialized_PausableImplTest, Initialized_WalletImplTest, Initialized_PassThroughWalletImplBase)
     {
         Initialized_PassThroughWalletImplBase._initialize();
     }
@@ -139,8 +153,8 @@ contract Initialized_PassThroughWalletImplTest is
 }
 
 contract Paused_Initialized_PassThroughWalletImplTest is
-    Paused_Initialized_PassThroughWalletImplBase,
-    Initialized_PassThroughWalletImplTest
+    Initialized_PassThroughWalletImplTest,
+    Paused_Initialized_PassThroughWalletImplBase
 {
     function setUp()
         public
@@ -164,7 +178,7 @@ contract Paused_Initialized_PassThroughWalletImplTest is
 
     function test_revertWhen_paused_passThroughTokens() public paused {
         vm.expectRevert(Paused.selector);
-        $passThroughWallet.passThroughTokens(tokens);
+        $passThroughWallet.passThroughTokens($tokens);
     }
 
     function testFuzz_revertWhen_paused_passThroughTokens(address caller_, address[] memory tokens_) public paused {
@@ -175,8 +189,8 @@ contract Paused_Initialized_PassThroughWalletImplTest is
 }
 
 contract Unpaused_Initialized_PassThroughWalletImplTest is
-    Unpaused_Initialized_PassThroughWalletImplBase,
-    Initialized_PassThroughWalletImplTest
+    Initialized_PassThroughWalletImplTest,
+    Unpaused_Initialized_PassThroughWalletImplBase
 {
     using TokenUtils for address;
 
@@ -201,18 +215,18 @@ contract Unpaused_Initialized_PassThroughWalletImplTest is
     /// -----------------------------------------------------------------------
 
     function test_passThroughTokens_sendsTokensToPassThrough() public unpaused {
-        uint256 length = tokens.length;
+        uint256 length = $tokens.length;
         uint256[] memory preBalancesWallet = new uint256[](length);
         uint256[] memory preBalancesBob = new uint256[](length);
         for (uint256 i; i < length; ++i) {
-            address token = tokens[i];
+            address token = $tokens[i];
             preBalancesWallet[i] = token._balanceOf(address($passThroughWallet));
             preBalancesBob[i] = token._balanceOf(users.bob);
         }
 
-        $passThroughWallet.passThroughTokens(tokens);
+        $passThroughWallet.passThroughTokens($tokens);
         for (uint256 i; i < length; ++i) {
-            address token = tokens[i];
+            address token = $tokens[i];
             assertEq(token._balanceOf(users.bob), preBalancesBob[i] + preBalancesWallet[i]);
             assertEq(token._balanceOf(address($passThroughWallet)), 0);
         }
@@ -228,28 +242,28 @@ contract Unpaused_Initialized_PassThroughWalletImplTest is
         uint256[] memory preBalancesWallet = new uint256[](length);
         uint256[] memory preBalancesBob = new uint256[](length);
         for (uint256 i; i < length; i++) {
-            address token = tokens[i];
+            address token = $tokens[i];
             _deal({account: address($passThroughWallet), token: token, amount: uint256(amounts_[i])});
             preBalancesWallet[i] = token._balanceOf(address($passThroughWallet));
             preBalancesBob[i] = token._balanceOf(users.bob);
         }
 
-        $passThroughWallet.passThroughTokens(tokens);
+        $passThroughWallet.passThroughTokens($tokens);
         for (uint256 i; i < length; ++i) {
-            address token = tokens[i];
+            address token = $tokens[i];
             assertEq(token._balanceOf(users.bob), preBalancesBob[i] + preBalancesWallet[i]);
             assertEq(token._balanceOf(address($passThroughWallet)), 0);
         }
     }
 
     function test_passThroughTokens_returnsAmounts() public unpaused {
-        uint256 length = tokens.length;
+        uint256 length = $tokens.length;
         uint256[] memory preBalancesWallet = new uint256[](length);
         for (uint256 i; i < length; ++i) {
-            preBalancesWallet[i] = tokens[i]._balanceOf(address($passThroughWallet));
+            preBalancesWallet[i] = $tokens[i]._balanceOf(address($passThroughWallet));
         }
 
-        uint256[] memory amounts = $passThroughWallet.passThroughTokens(tokens);
+        uint256[] memory amounts = $passThroughWallet.passThroughTokens($tokens);
         for (uint256 i; i < length; ++i) {
             assertEq(amounts[i], preBalancesWallet[i]);
         }
@@ -263,25 +277,25 @@ contract Unpaused_Initialized_PassThroughWalletImplTest is
 
         uint256 length = NUM_TOKENS;
         for (uint256 i; i < length; i++) {
-            _deal({account: address($passThroughWallet), token: tokens[i], amount: uint256(amounts_[i])});
+            _deal({account: address($passThroughWallet), token: $tokens[i], amount: uint256(amounts_[i])});
         }
 
-        uint256[] memory amounts = $passThroughWallet.passThroughTokens(tokens);
+        uint256[] memory amounts = $passThroughWallet.passThroughTokens($tokens);
         for (uint256 i; i < length; ++i) {
             assertEq(amounts[i], amounts_[i]);
         }
     }
 
     function test_passThroughTokens_emitsPassThrough() public unpaused {
-        uint256 length = tokens.length;
+        uint256 length = $tokens.length;
         uint256[] memory preBalancesWallet = new uint256[](length);
         for (uint256 i; i < length; ++i) {
-            preBalancesWallet[i] = tokens[i]._balanceOf(address($passThroughWallet));
+            preBalancesWallet[i] = $tokens[i]._balanceOf(address($passThroughWallet));
         }
 
         _expectEmit();
-        emit PassThrough(tokens, preBalancesWallet);
-        $passThroughWallet.passThroughTokens(tokens);
+        emit PassThrough($tokens, preBalancesWallet);
+        $passThroughWallet.passThroughTokens($tokens);
     }
 
     function testFuzz_passThroughTokens_emitsPassThrough(address caller_, uint96[NUM_TOKENS] calldata amounts_)
@@ -294,11 +308,11 @@ contract Unpaused_Initialized_PassThroughWalletImplTest is
         uint256[] memory amounts = new uint256[](length);
         for (uint256 i; i < length; i++) {
             amounts[i] = uint256(amounts_[i]);
-            _deal({account: address($passThroughWallet), token: tokens[i], amount: amounts[i]});
+            _deal({account: address($passThroughWallet), token: $tokens[i], amount: amounts[i]});
         }
 
         _expectEmit();
-        emit PassThrough(tokens, amounts);
-        $passThroughWallet.passThroughTokens(tokens);
+        emit PassThrough($tokens, amounts);
+        $passThroughWallet.passThroughTokens($tokens);
     }
 }
