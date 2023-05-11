@@ -48,15 +48,25 @@ abstract contract Uninitialized_PassThroughWalletImplBase is
 
         $passThroughWalletFactory = new PassThroughWalletFactory();
 
-        WalletImpl.Call[] memory calls = new WalletImpl.Call[](1);
-        calls[0] = WalletImpl.Call({to: users.alice, value: 1 ether, data: "0x123456789"});
+        $calls.push(WalletImpl.Call({to: users.alice, value: 1 ether, data: "0x123456789"}));
+
+        $erc1155Ids.push(0);
+        $erc1155Ids.push(1);
+        $erc1155Amounts.push(1);
+        $erc1155Amounts.push(2);
 
         address[NUM_TOKENS] memory tokens = [ETH_ADDRESS, address(mockERC20)];
 
         _setUpPassThroughWalletImplState({
             passThroughWallet_: address($passThroughWalletFactory.passThroughWalletImpl()),
             paused_: false,
-            calls_: calls,
+            calls_: $calls,
+            erc721Amount_: 1,
+            erc1155Id_: 0,
+            erc1155Amount_: 1,
+            erc1155Data_: "",
+            erc1155Ids_: $erc1155Ids,
+            erc1155Amounts_: $erc1155Amounts,
             passThrough_: users.bob,
             nextPassThrough_: users.alice,
             notFactory_: users.eve,
@@ -68,13 +78,28 @@ abstract contract Uninitialized_PassThroughWalletImplBase is
         address passThroughWallet_,
         bool paused_,
         WalletImpl.Call[] memory calls_,
+        uint256 erc721Amount_,
+        uint256 erc1155Id_,
+        uint256 erc1155Amount_,
+        bytes memory erc1155Data_,
+        uint256[] memory erc1155Ids_,
+        uint256[] memory erc1155Amounts_,
         address passThrough_,
         address nextPassThrough_,
         address notFactory_,
         address[NUM_TOKENS] memory tokens_
     ) internal virtual {
         _setUpPausableImplState({pausable_: passThroughWallet_, paused_: paused_});
-        _setUpWalletImplState({wallet_: passThroughWallet_, calls_: calls_});
+        _setUpWalletImplState({
+            wallet_: passThroughWallet_,
+            calls_: calls_,
+            erc721Amount_: erc721Amount_,
+            erc1155Id_: erc1155Id_,
+            erc1155Amount_: erc1155Amount_,
+            erc1155Data_: erc1155Data_,
+            erc1155Ids_: erc1155Ids_,
+            erc1155Amounts_: erc1155Amounts_
+        });
 
         $passThroughWallet = PassThroughWalletImpl(passThroughWallet_);
         $notFactory = notFactory_;
