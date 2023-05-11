@@ -31,7 +31,7 @@ abstract contract Uninitialized_PassThroughWalletImplBase is
     Uninitialized_WalletImplBase
 {
     event SetPassThrough(address passThrough);
-    event PassThrough(address[] tokens, uint256[] amounts);
+    event PassThrough(address indexed passThrough, address[] tokens, uint256[] amounts);
 
     PassThroughWalletFactory $passThroughWalletFactory;
     PassThroughWalletImpl $passThroughWallet;

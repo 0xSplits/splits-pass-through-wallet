@@ -32,7 +32,7 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     /// -----------------------------------------------------------------------
 
     event SetPassThrough(address passThrough);
-    event PassThrough(address[] tokens, uint256[] amounts);
+    event PassThrough(address indexed passThrough, address[] tokens, uint256[] amounts);
 
     // emitted in clone bytecode
     event ReceiveETH(uint256 amount);
@@ -132,6 +132,6 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
             }
         }
 
-        emit PassThrough(tokens_, amounts);
+        emit PassThrough(_passThrough, tokens_, amounts);
     }
 }

@@ -294,7 +294,7 @@ contract Unpaused_Initialized_PassThroughWalletImplTest is
         }
 
         _expectEmit();
-        emit PassThrough($tokens, preBalancesWallet);
+        emit PassThrough($passThrough, $tokens, preBalancesWallet);
         $passThroughWallet.passThroughTokens($tokens);
     }
 
@@ -312,7 +312,7 @@ contract Unpaused_Initialized_PassThroughWalletImplTest is
         }
 
         _expectEmit();
-        emit PassThrough($tokens, amounts);
+        emit PassThrough($passThrough, $tokens, amounts);
         $passThroughWallet.passThroughTokens($tokens);
     }
 }
