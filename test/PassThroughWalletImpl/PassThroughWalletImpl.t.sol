@@ -25,18 +25,6 @@ import {
 
 import {PassThroughWalletImpl} from "../../src/PassThroughWalletImpl.sol";
 
-// TODO
-// review tests
-// ? more fuzzing ?
-// ? forks ?
-//   not sure how to bring forks & fuzzes together .. careful w rpc requests
-// ? revisit best practices:
-/* Define [rpc_endpoints] in the foundry.toml config file and use the forking cheatcodes. */
-/* Access the RPC URL endpoint in your test with forge-std's stdChains.ChainName.rpcUrl. See the list of supported chains and expected config file aliases here. */
-/* Always pin to a block so tests are deterministic and RPC responses are cached. */
-// ? forks need different contracts for different networks anyway ?
-// ? maybe only erc20 tests on fork using dai or usdc or both idk; woof just do both on both but then if it never gets done..?
-
 contract Uninitialized_PassThroughWalletImplTest is
     Uninitialized_PausableImplTest,
     Uninitialized_WalletImplTest,
@@ -88,8 +76,6 @@ contract Uninitialized_PassThroughWalletImplTest is
 
         assertEq($passThroughWallet.passThrough(), $passThrough);
     }
-
-    // TODO: more fuzzing
 }
 
 contract Initialized_PassThroughWalletImplTest is
