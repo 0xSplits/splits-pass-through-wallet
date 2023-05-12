@@ -60,9 +60,7 @@ contract Uninitialized_PassThroughWalletImplTest is
         PassThroughWalletImpl.InitParams calldata params_
     ) public callerNotFactory(caller_) {
         _setUpPassThroughWalletParams(params_);
-
-        vm.expectRevert(Unauthorized.selector);
-        $passThroughWallet.initializer(_initParams());
+        test_revertWhen_callerNotFactory_initializer();
     }
 
     function test_initializer_setsPassThrough() public {
@@ -72,9 +70,7 @@ contract Uninitialized_PassThroughWalletImplTest is
 
     function testFuzz_initializer_setsPassThrough(PassThroughWalletImpl.InitParams calldata params_) public {
         _setUpPassThroughWalletParams(params_);
-        _initialize();
-
-        assertEq($passThroughWallet.passThrough(), $passThrough);
+        test_initializer_setsPassThrough();
     }
 }
 

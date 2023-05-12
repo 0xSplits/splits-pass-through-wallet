@@ -9,27 +9,27 @@ import {PassThroughWalletImpl} from "../src/PassThroughWalletImpl.sol";
 
 contract PassThroughWalletFactoryTest is BaseTest, LibCloneBase {
     event CreatePassThroughWallet(
-        PassThroughWalletImpl indexed passThroughWallet, PassThroughWalletImpl.InitParams params
+        PassThroughWalletImpl indexed $passThroughWallet, PassThroughWalletImpl.InitParams params
     );
 
-    PassThroughWalletFactory passThroughWalletFactory;
-    PassThroughWalletImpl passThroughWalletImpl;
-    PassThroughWalletImpl passThroughWallet;
+    PassThroughWalletFactory $passThroughWalletFactory;
+    PassThroughWalletImpl $passThroughWalletImpl;
+    PassThroughWalletImpl $passThroughWallet;
 
-    PassThroughWalletImpl.InitParams params;
+    PassThroughWalletImpl.InitParams $params;
 
     function setUp() public virtual override(BaseTest, LibCloneBase) {
         BaseTest.setUp();
 
-        passThroughWalletFactory = new PassThroughWalletFactory();
-        passThroughWalletImpl = passThroughWalletFactory.passThroughWalletImpl();
+        $passThroughWalletFactory = new PassThroughWalletFactory();
+        $passThroughWalletImpl = $passThroughWalletFactory.passThroughWalletImpl();
 
-        params = PassThroughWalletImpl.InitParams({owner: users.alice, paused: false, passThrough: users.bob});
-        passThroughWallet = passThroughWalletFactory.createPassThroughWallet(params);
+        $params = PassThroughWalletImpl.InitParams({owner: users.alice, paused: false, passThrough: users.bob});
+        $passThroughWallet = $passThroughWalletFactory.createPassThroughWallet($params);
 
         // setup LibCloneBase
-        impl = address(passThroughWalletImpl);
-        clone = address(passThroughWallet);
+        impl = address($passThroughWalletImpl);
+        clone = address($passThroughWallet);
         amount = 1 ether;
         data = "Hello, World!";
     }
@@ -40,44 +40,44 @@ contract PassThroughWalletFactoryTest is BaseTest, LibCloneBase {
 
     function test_createPassThroughWallet_callsInitializer() public {
         vm.expectCall({
-            callee: address(passThroughWalletImpl),
+            callee: address($passThroughWalletImpl),
             msgValue: 0 ether,
-            data: abi.encodeCall(PassThroughWalletImpl.initializer, (params))
+            data: abi.encodeCall(PassThroughWalletImpl.initializer, ($params))
         });
-        passThroughWalletFactory.createPassThroughWallet(params);
+        $passThroughWalletFactory.createPassThroughWallet($params);
     }
 
     function testFuzz_createPassThroughWallet_callsInitializer(PassThroughWalletImpl.InitParams calldata params_)
         public
     {
         vm.expectCall({
-            callee: address(passThroughWalletImpl),
+            callee: address($passThroughWalletImpl),
             msgValue: 0 ether,
             data: abi.encodeCall(PassThroughWalletImpl.initializer, (params_))
         });
-        passThroughWalletFactory.createPassThroughWallet(params_);
+        $passThroughWalletFactory.createPassThroughWallet(params_);
     }
 
     function test_createPassThroughWallet_emitsCreatePassThroughWallet() public {
-        address expectedAddress = _predictNextAddressFrom(address(passThroughWalletFactory));
+        address expectedAddress = _predictNextAddressFrom(address($passThroughWalletFactory));
         _expectEmit();
-        emit CreatePassThroughWallet(PassThroughWalletImpl(expectedAddress), params);
-        passThroughWalletFactory.createPassThroughWallet(params);
+        emit CreatePassThroughWallet(PassThroughWalletImpl(expectedAddress), $params);
+        $passThroughWalletFactory.createPassThroughWallet($params);
     }
 
     function testFuzz_createPassThroughWallet_emitsCreatePassThroughWallet(
         PassThroughWalletImpl.InitParams calldata params_
     ) public {
-        address expectedAddress = _predictNextAddressFrom(address(passThroughWalletFactory));
+        address expectedAddress = _predictNextAddressFrom(address($passThroughWalletFactory));
         _expectEmit();
         emit CreatePassThroughWallet(PassThroughWalletImpl(expectedAddress), params_);
-        passThroughWalletFactory.createPassThroughWallet(params_);
+        $passThroughWalletFactory.createPassThroughWallet(params_);
     }
 
     function testFuzz_createPassThroughWallet_createsClone_code(PassThroughWalletImpl.InitParams calldata params_)
         public
     {
-        clone = address(passThroughWalletFactory.createPassThroughWallet(params_));
+        clone = address($passThroughWalletFactory.createPassThroughWallet(params_));
 
         test_clone_code();
     }
@@ -86,7 +86,7 @@ contract PassThroughWalletFactoryTest is BaseTest, LibCloneBase {
         PassThroughWalletImpl.InitParams calldata params_,
         uint96 amount_
     ) public {
-        clone = address(passThroughWalletFactory.createPassThroughWallet(params_));
+        clone = address($passThroughWalletFactory.createPassThroughWallet(params_));
         amount = amount_;
 
         test_clone_canReceiveETH();
@@ -96,7 +96,7 @@ contract PassThroughWalletFactoryTest is BaseTest, LibCloneBase {
         PassThroughWalletImpl.InitParams calldata params_,
         uint96 amount_
     ) public {
-        clone = address(passThroughWalletFactory.createPassThroughWallet(params_));
+        clone = address($passThroughWalletFactory.createPassThroughWallet(params_));
         amount = amount_;
 
         test_clone_emitsReceiveETH();
@@ -108,7 +108,7 @@ contract PassThroughWalletFactoryTest is BaseTest, LibCloneBase {
     ) public {
         vm.assume(data_.length > 0);
 
-        clone = address(passThroughWalletFactory.createPassThroughWallet(params_));
+        clone = address($passThroughWalletFactory.createPassThroughWallet(params_));
         data = data_;
 
         test_clone_canDelegateCall();

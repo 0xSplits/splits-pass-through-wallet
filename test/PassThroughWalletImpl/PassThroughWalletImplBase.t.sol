@@ -159,7 +159,6 @@ abstract contract Initialized_PassThroughWalletImplBase is
         override(Uninitialized_PassThroughWalletImplBase, Initialized_PausableImplBase, Initialized_WalletImplBase)
     {
         Uninitialized_PassThroughWalletImplBase.setUp();
-
         _initialize();
     }
 
@@ -177,7 +176,6 @@ abstract contract Paused_Initialized_PassThroughWalletImplBase is Initialized_Pa
     function setUp() public virtual override {
         Uninitialized_PassThroughWalletImplBase.setUp();
         $paused = true;
-
         _initialize();
     }
 }
