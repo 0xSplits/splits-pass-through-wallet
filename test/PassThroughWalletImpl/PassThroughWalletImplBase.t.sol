@@ -8,7 +8,6 @@ import {
     PausableImplHarness,
     Uninitialized_PausableImplBase
 } from "splits-tests/PausableImpl/PausableImplBase.t.sol";
-import {OwnableImplHarness} from "splits-tests/OwnableImpl/OwnableImplBase.t.sol";
 import {
     Initialized_WalletImplBase,
     WalletImpl,
@@ -123,8 +122,6 @@ abstract contract Uninitialized_PassThroughWalletImplBase is
     }
 
     function _initialize() internal virtual override(Uninitialized_PausableImplBase, Uninitialized_WalletImplBase) {
-        /* vm.prank(address($passThroughWalletFactory)); */
-        /* $passThroughWallet.initializer(_initParams()); */
         $passThroughWallet = $passThroughWalletFactory.createPassThroughWallet(_initParams());
         $ownable = OwnableImplHarness(address($passThroughWallet));
         $pausable = PausableImplHarness(address($passThroughWallet));
