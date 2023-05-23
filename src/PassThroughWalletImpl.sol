@@ -116,7 +116,7 @@ contract PassThroughWalletImpl is WalletImpl, PausableImpl {
     /*     emit ReceiveETH(msg.value); */
     /* } */
 
-    /// send tokens_ to $passThrough
+    /// send `tokens_` to `$passThrough`
     function passThroughTokens(address[] calldata tokens_) external pausable returns (uint256[] memory amounts) {
         address _passThrough = $passThrough;
         uint256 length = tokens_.length;
