@@ -50,9 +50,13 @@ contract Uninitialized_PassThroughWalletImplTest is
     /// initializer
     /// -----------------------------------------------------------------------
 
-    function test_revertWhen_callerNotFactory_initializer() public callerNotFactory($notFactory) {
+    function _test_revertWhen_callerNotFactory_initializer() internal {
         vm.expectRevert(Unauthorized.selector);
         $passThroughWallet.initializer(_initParams());
+    }
+
+    function test_revertWhen_callerNotFactory_initializer() public callerNotFactory($notFactory) {
+        _test_revertWhen_callerNotFactory_initializer();
     }
 
     function testFuzz_revertWhen_callerNotFactory_initializer(
@@ -60,7 +64,8 @@ contract Uninitialized_PassThroughWalletImplTest is
         PassThroughWalletImpl.InitParams calldata params_
     ) public callerNotFactory(caller_) {
         _setUpPassThroughWalletParams(params_);
-        test_revertWhen_callerNotFactory_initializer();
+
+        _test_revertWhen_callerNotFactory_initializer();
     }
 
     function test_initializer_setsPassThrough() public {
@@ -99,9 +104,13 @@ contract Initialized_PassThroughWalletImplTest is
     /// setPassThrough
     /// -----------------------------------------------------------------------
 
-    function test_revertWhen_callerNotOwner_setPassThrough() public callerNotOwner($notOwner) {
+    function _test_revertWhen_callerNotOwner_setPassThrough() internal {
         vm.expectRevert(Unauthorized.selector);
         $passThroughWallet.setPassThrough($notOwner);
+    }
+
+    function test_revertWhen_callerNotOwner_setPassThrough() public callerNotOwner($notOwner) {
+        _test_revertWhen_callerNotOwner_setPassThrough();
     }
 
     function testFuzz_revertWhen_callerNotOwner_setPassThrough(address notOwner_, address nextPassThrough_)
@@ -109,28 +118,39 @@ contract Initialized_PassThroughWalletImplTest is
         callerNotOwner(notOwner_)
     {
         $nextPassThrough = nextPassThrough_;
-        test_revertWhen_callerNotOwner_setPassThrough();
+
+        _test_revertWhen_callerNotOwner_setPassThrough();
     }
 
-    function test_setPassThrough_setsPassThrough() public callerOwner {
+    function _test_setPassThrough_setsPassThrough() internal {
         $passThroughWallet.setPassThrough($nextPassThrough);
         assertEq($passThroughWallet.passThrough(), $nextPassThrough);
     }
 
-    function testFuzz_setPassThrough_setsPassThrough(address nextPassThrough_) public callerOwner {
-        $nextPassThrough = nextPassThrough_;
-        test_setPassThrough_setsPassThrough();
+    function test_setPassThrough_setsPassThrough() public callerOwner {
+        _test_setPassThrough_setsPassThrough();
     }
 
-    function test_setPassThrough_emitsSetPassThrough() public callerOwner {
+    function testFuzz_setPassThrough_setsPassThrough(address nextPassThrough_) public callerOwner {
+        $nextPassThrough = nextPassThrough_;
+
+        _test_setPassThrough_setsPassThrough();
+    }
+
+    function _test_setPassThrough_emitsSetPassThrough() internal {
         _expectEmit();
         emit SetPassThrough($nextPassThrough);
         $passThroughWallet.setPassThrough($nextPassThrough);
     }
 
+    function test_setPassThrough_emitsSetPassThrough() public callerOwner {
+        _test_setPassThrough_emitsSetPassThrough();
+    }
+
     function testFuzz_setPassThrough_emitsSetPassThrough(address nextPassThrough_) public callerOwner {
         $nextPassThrough = nextPassThrough_;
-        test_setPassThrough_emitsSetPassThrough();
+
+        _test_setPassThrough_emitsSetPassThrough();
     }
 }
 
@@ -164,7 +184,7 @@ contract Paused_Initialized_PassThroughWalletImplTest is
     }
 
     function testFuzz_revertWhen_paused_passThroughTokens(address caller_, address[] memory tokens_) public paused {
-        changePrank(caller_);
+        vm.startPrank(caller_);
         vm.expectRevert(Paused.selector);
         $passThroughWallet.passThroughTokens(tokens_);
     }
@@ -218,7 +238,7 @@ contract Unpaused_Initialized_PassThroughWalletImplTest is
         public
         unpaused
     {
-        changePrank(caller_);
+        vm.startPrank(caller_);
 
         uint256 length = NUM_TOKENS;
         uint256[] memory preBalancesWallet = new uint256[](length);
@@ -255,7 +275,7 @@ contract Unpaused_Initialized_PassThroughWalletImplTest is
         public
         unpaused
     {
-        changePrank(caller_);
+        vm.startPrank(caller_);
 
         uint256 length = NUM_TOKENS;
         for (uint256 i; i < length; i++) {
@@ -284,7 +304,7 @@ contract Unpaused_Initialized_PassThroughWalletImplTest is
         public
         unpaused
     {
-        changePrank(caller_);
+        vm.startPrank(caller_);
 
         uint256 length = NUM_TOKENS;
         uint256[] memory amounts = new uint256[](length);

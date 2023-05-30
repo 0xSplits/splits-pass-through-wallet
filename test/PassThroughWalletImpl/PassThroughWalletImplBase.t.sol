@@ -135,12 +135,12 @@ abstract contract Uninitialized_PassThroughWalletImplBase is
     modifier callerNotFactory(address notFactory_) {
         vm.assume(notFactory_ != address($passThroughWalletFactory));
         $notFactory = notFactory_;
-        changePrank(notFactory_);
+        vm.startPrank(notFactory_);
         _;
     }
 
     modifier callerFactory() {
-        changePrank(address($passThroughWalletFactory));
+        vm.startPrank(address($passThroughWalletFactory));
         _;
     }
 }
