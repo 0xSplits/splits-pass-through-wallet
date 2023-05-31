@@ -2,7 +2,7 @@
 
 ## What
 
-Pass-through wallet is an ownable smart contract wallet with pausable-but-otherwise-permissionless fund forwarding
+Pass-through wallet is an ownable smart contract wallet with pausable token forwarding
 
 ## Why
 
@@ -14,11 +14,13 @@ Some onchain value flows require or benefit greatly from inserting full smart co
 
 ### How does it forward funds?
 
-Via a single external, pausable function taking an array of tokens to forward (0x0 for ETH).
+Via an external, pausable function taking an array of tokens to forward (0x0 for ETH).
 
 ### How is it governed?
 
-A PassThroughWallet's owner, if set, has FULL CONTROL of the deployment. It may, at any time for any reason, change the passThrough, pause the flow, or execute arbitrary calls on behalf of the PassThroughWallet. In situations where flows ultimately belong to or benefit more than a single person & immutability is a nonstarter, we strongly recommend using multisigs or DAOs for governance.
+A PassThroughWallet's owner, if set, has FULL CONTROL of the deployment.
+It may, at any time for any reason, change the passThrough, pause the flow, or execute arbitrary calls on behalf of the PassThroughWallet.
+In situations where flows ultimately belong to or benefit more than a single person & immutability is a nonstarter, we strongly recommend using a multisig or DAO for governance.
 
 ## Lint
 
